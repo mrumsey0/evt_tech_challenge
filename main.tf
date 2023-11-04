@@ -19,11 +19,13 @@ provider "azurerm" {
   features {}
 }
 
+# Create resource group
 resource "azurerm_resource_group" "rg" {
   name     = "TechChallengeRG"
   location = "eastus2"
 }
 
+# Create virtual network
 resource "azurerm_virtual_network" "vnet" {
   name = "TechChallengeVNet"
   resource_group_name = azurerm_resource_group.rg.name
@@ -31,6 +33,7 @@ resource "azurerm_virtual_network" "vnet" {
   location = azurerm_resource_group.rg.location
 }
 
+# Create subnet
 resource "azurerm_subnet" "subnet" {
   name = "TechChallengeSubnet"
   resource_group_name = azurerm_resource_group.rg.name
@@ -38,6 +41,7 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes = ["10.0.1.0/24"]
 }
 
+# Create publuc IP address to access server
 resource "azurerm_public_ip" "publicIP" {
   name = "TechChallengePubIP"
   resource_group_name = azurerm_resource_group.rg.name
@@ -45,6 +49,7 @@ resource "azurerm_public_ip" "publicIP" {
   allocation_method = "Dynamic"
 }
 
+# Create security group with rules for http, https, and ssh
 resource "azurerm_network_security_group" "securityGroup" {
   name = "TechChallengeSecurityGroup"
   resource_group_name = azurerm_resource_group.rg.name
@@ -87,6 +92,7 @@ resource "azurerm_network_security_group" "securityGroup" {
    }
 }
 
+# Create network interface
 resource "azurerm_network_interface" "netInterface" {
   name = "TechChallengeNetInterface"
   resource_group_name = azurerm_resource_group.rg.name
@@ -100,11 +106,13 @@ resource "azurerm_network_interface" "netInterface" {
    }
 }
 
+# Associate network interface to security group
 resource "azurerm_network_interface_security_group_association" "association" {
   network_interface_id = azurerm_network_interface.netInterface.id
   network_security_group_id = azurerm_network_security_group.securityGroup.id
 }
 
+# Generate random id for storage accoutn
 resource "random_id" "random_id" {
   keepers = {
     resource_group = azurerm_resource_group.rg.name
@@ -113,6 +121,7 @@ resource "random_id" "random_id" {
   byte_length = 8
 }
 
+# Create storage account with unique name
 resource "azurerm_storage_account" "storageAccount" {
   name                     = "diag${random_id.random_id.hex}"
   location                 = azurerm_resource_group.rg.location
@@ -121,11 +130,13 @@ resource "azurerm_storage_account" "storageAccount" {
   account_replication_type = "LRS"
 }
 
+# Generate ssh key pair to access to VM
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
   rsa_bits = 4096
 }
 
+# Create VM
 resource "azurerm_linux_virtual_machine" "vm" {
   name = "TechChallengeVM"
   resource_group_name = azurerm_resource_group.rg.name
