@@ -28,7 +28,7 @@ How to install: https://docs.ansible.com/ansible/latest/installation_guide/intro
 3. Login to Microsoft Azure account with ```az login```
 
 4. Choose the Azure subscription you want to use to run the webserver (subscription id is in the "id" field)
-![azure_login](https://github.com/mrumsey0/evt_tech_challenge/assets/89649954/4326b5fd-b989-4153-9c39-a6d7460ae791)
+![azure_login](https://github.com/mrumsey0/evt_tech_challenge/blob/main/images/azure_login.png)
 
 5. Build and run webserver with ```./runserver SUBSCRIPTION_ID```
 
