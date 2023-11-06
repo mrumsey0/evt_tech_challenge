@@ -31,7 +31,7 @@ How to install: https://docs.ansible.com/ansible/latest/installation_guide/intro
 
 5. Build and run webserver with ```./runserver SUBSCRIPTION_ID```
 
-6. When build script is finished, it will output the address to access the webserver in a web browser
+6. When build script is finished, it will output the address to access the webserver in a web browser. If warned by web browser, go to advanced settings and continue to site.
 
 7. When finished, run ```./cleanup.sh``` to delete Azure resources and logout
 
