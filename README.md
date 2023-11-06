@@ -3,7 +3,7 @@ Mark Rumsey's solution for EVT Recruiting's 2023 technical challenge
 
 ## Requirements
 
-### Docker (if using Dockerfile)
+### Docker (if building from Dockerfile)
 
 How to install: https://docs.docker.com/engine/install/
 
