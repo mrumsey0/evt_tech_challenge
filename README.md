@@ -23,7 +23,7 @@ How to install: https://docs.ansible.com/ansible/latest/installation_guide/intro
 
 1. Install requirements locally OR run ```docker build -t evt-tech-challenge . && docker run -it evt-tech-challenge``` 
 
-2. ```cd ./src/``` or ```cd /app/``` in docker container
+2. ```cd ./src/``` if building locally or ```cd /app/``` if building in docker container
 
 3. Login to Microsoft Azure account with ```az login```
 
