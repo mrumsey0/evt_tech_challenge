@@ -1,4 +1,4 @@
 #!/bin/bash
 
-terraform destroy -auto-approve
-az logout
+# destroy azure resources and logout
+terraform destroy -auto-approve && az logout

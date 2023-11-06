@@ -21,15 +21,19 @@ How to install: https://docs.ansible.com/ansible/latest/installation_guide/intro
 
 ## Run Webserver
 
-1. Install requirements locally OR run ```docker build -t evt-tech-challenge . && docker run -it evt-tech-challenge``` and ```cd /app``` in docker container
+1. Install requirements locally OR run ```docker build -t evt-tech-challenge . && docker run -it evt-tech-challenge``` 
 
-2. Login to Microsoft Azure account with ```az login```
+2. ```cd ./src/``` or ```cd /app/``` in docker container
 
-3. Choose the Azure subscription you want to use to run the webserver (subscription id is in the "id" field)
+3. Login to Microsoft Azure account with ```az login```
 
-4. Build and run webserver with ```./runserver SUBSCRIPTION_ID```
+4. Choose the Azure subscription you want to use to run the webserver (subscription id is in the "id" field)
 
-5. When build script is finished, it will output the address to access the webserver in a web browser
+5. Build and run webserver with ```./runserver SUBSCRIPTION_ID```
+
+6. When build script is finished, it will output the address to access the webserver in a web browser
+
+7. When finished, run ```./cleanup.sh``` to delete Azure resources and logout
 
 ## Solution Details
 
