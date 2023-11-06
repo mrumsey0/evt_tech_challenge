@@ -1,0 +1,117 @@
+---
+- name: Install required packages
+  hosts: webserver
+  remote_user: tcAdmin
+
+  tasks:
+    - name: Update apt repositiories cache and install nginx
+      apt:
+        name: nginx
+        update_cache: yes
+      become: true
+    - name: Install OpenSSL
+      apt:
+        name: openssl
+      become: true
+
+- name: Create nginx server block
+  hosts: webserver
+  remote_user: tcAdmin
+
+  tasks:
+    - name: Create server block directory
+      file:
+        path: /var/www/{{ ansible_host }}/html
+        state: directory
+        owner: tcAdmin
+        group: tcAdmin
+      become: true
+
+    - name: Change permissions of parent directory
+      file:
+        path: /var/www/{{ ansible_host }}
+        mode: '0755'
+      become: true
+
+    - name: Copy html file to webserver
+      copy:
+        src: evt-web.html
+        dest: /var/www/{{ ansible_host }}/html/index.html
+        owner: tcAdmin
+        group: tcAdmin
+        mode: '0755'
+      become: true
+
+    - name: Update nginx.conf for server blocks
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+
+- name: Configure nginx for self-signed SSL
+  hosts: webserver
+  remote_user: tcAdmin
+
+  tasks:
+    - name: Generate private key (RSA, 4096 bits)
+      community.crypto.openssl_privatekey:
+        path: /etc/ssl/private/nginx-selfsigned.key
+      become: true
+
+    - name: Create certificate signing request (CSR) for self-signed certificate
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: /etc/ssl/private/nginx-selfsigned.key
+        common_name: "{{ ansible_host }}"
+      register: csr
+      become: true
+    
+    - name: Create self-signed certificate from CSR
+      community.crypto.x509_certificate:
+        path: /etc/ssl/certs/nginx-selfsigned.crt
+        csr_content: "{{ csr.csr }}"
+        privatekey_path: /etc/ssl/private/nginx-selfsigned.key
+        provider: selfsigned
+      become: true
+
+    - name: Generate Diffie-Hellman parameters with the 4096-bit size (this step may take a few minutes)
+      community.crypto.openssl_dhparam:
+        path: /etc/nginx/dhparam.pem
+      become: true
+
+    - name: Create nginx configuration snippet for self-signed certificate
+      copy:
+        src: self-signed.conf
+        dest: /etc/nginx/snippets/self-signed.conf
+        owner: tcAdmin
+        group: tcAdmin
+        mode: '0644'
+      become: true
+
+    - name: Create nginx configuration for SSL settings
+      copy:
+        src: ssl-params.conf
+        dest: /etc/nginx/snippets/ssl-params.conf
+        owner: tcAdmin
+        group: tcAdmin
+        mode: '0644'
+      become: true
+
+    - name: Update server block with SSL
+      copy:
+        src: server_block
+        dest: /etc/nginx/sites-available/{{ ansible_host }}
+        owner: tcAdmin
+        group: tcAdmin
+        mode: '0644'
+      become: true
+
+    - name: Enable server block with symlink
+      command: sudo ln -s /etc/nginx/sites-available/{{ ansible_host }} /etc/nginx/sites-enabled/
+      become: true
+
+    - name: Reload nginx to make configuration changes
+      command: nginx -s reload
+      become: true
